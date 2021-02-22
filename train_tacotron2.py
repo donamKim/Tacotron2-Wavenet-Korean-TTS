@@ -5,21 +5,18 @@ import math
 import argparse
 import traceback
 import subprocess
-import numpy as np
-from jamo import h2j
 import tensorflow as tf
-from datetime import datetime
 from functools import partial
 
 from hparams import hparams, hparams_debug_string
 from tacotron2 import create_model, get_most_recent_checkpoint
 
 from utils import ValueWindow, prepare_dirs
-from utils import infolog, warning, plot, load_hparams
-from utils import get_git_revision_hash, get_git_diff, str2bool, parallel_run
+from utils import infolog, plot
+from utils import str2bool, parallel_run
 
 from utils.audio import save_wav, inv_spectrogram
-from text import sequence_to_text, text_to_sequence
+from text import sequence_to_text
 from datasets.datafeeder_tacotron2 import DataFeederTacotron2
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
@@ -241,12 +238,10 @@ def main():
 
     parser.add_argument('--log_dir', default='logdir-tacotron2')
     
-    parser.add_argument('--data_paths', default='D:\\hccho\\Tacotron-Wavenet-Vocoder-hccho\\data\\moon,D:\\hccho\\Tacotron-Wavenet-Vocoder-hccho\\data\\son')
-    #parser.add_argument('--data_paths', default='D:\\hccho\\Tacotron-Wavenet-Vocoder-hccho\\data\\small1,D:\\hccho\\Tacotron-Wavenet-Vocoder-hccho\\data\\small2')
+    parser.add_argument('--data_paths', default='./data/son')
     
-    
-    #parser.add_argument('--load_path', default=None)   # 아래의 'initialize_path'보다 우선 적용
-    parser.add_argument('--load_path', default='logdir-tacotron2/moon+son_2019-03-01_10-35-44')
+    parser.add_argument('--load_path', default=None)   # 아래의 'initialize_path'보다 우선 적용
+    # parser.add_argument('--load_path', default='logdir-tacotron2/moon+son_2019-03-01_10-35-44')
     
     
     parser.add_argument('--initialize_path', default=None)   # ckpt로 부터 model을 restore하지만, global step은 0에서 시작
@@ -258,7 +253,7 @@ def main():
     
     parser.add_argument('--test_interval', type=int, default=500)  # 500
     
-    parser.add_argument('--checkpoint_interval', type=int, default=2000) # 2000
+    parser.add_argument('--checkpoint_interval', type=int, default=100) # 2000
     parser.add_argument('--skip_path_filter', type=str2bool, default=False, help='Use only for debugging')
 
     parser.add_argument('--slack_url', help='Slack webhook URL to get periodic reports.')
