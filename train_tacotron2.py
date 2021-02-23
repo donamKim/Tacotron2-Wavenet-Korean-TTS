@@ -238,7 +238,7 @@ def main():
 
     parser.add_argument('--log_dir', default='logdir-tacotron2')
     
-    parser.add_argument('--data_paths', default='./data/son')
+    parser.add_argument('--data_paths', default='./data/son,./data/moon')
     
     parser.add_argument('--load_path', default=None)   # 아래의 'initialize_path'보다 우선 적용
     # parser.add_argument('--load_path', default='logdir-tacotron2/moon+son_2019-03-01_10-35-44')
