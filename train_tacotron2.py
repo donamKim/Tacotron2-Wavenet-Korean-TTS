@@ -153,7 +153,7 @@ def train(log_dir, config):
     loss_window = ValueWindow(100)
     saver = tf.train.Saver(max_to_keep=None, keep_checkpoint_every_n_hours=2)
 
-    sess_config = tf.ConfigProto(log_device_placement=False,allow_soft_placement=True)
+    sess_config = tf.ConfigProto(log_device_placement=True, allow_soft_placement=True)
     sess_config.gpu_options.allow_growth=True
 
     # Train!
