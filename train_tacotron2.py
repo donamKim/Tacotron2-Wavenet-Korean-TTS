@@ -90,7 +90,9 @@ def save_and_plot(sequences, spectrograms,alignments, log_dir, step, loss, prefi
 
 
 def train(log_dir, config):
-    tf.debugging.set_log_device_placement(True)
+    # tf.debugging.set_log_device_placement(True)
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    print(f'@@@@@@@ GPUS @@@@@@: {len(gpus)}')
 
     config.data_paths = config.data_paths  # ['datasets/moon']
 
