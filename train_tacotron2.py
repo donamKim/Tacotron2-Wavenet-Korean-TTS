@@ -90,6 +90,8 @@ def save_and_plot(sequences, spectrograms,alignments, log_dir, step, loss, prefi
 
 
 def train(log_dir, config):
+    tf.debugging.set_log_device_placement(True)
+
     config.data_paths = config.data_paths  # ['datasets/moon']
 
     data_dirs = config.data_paths  # ['datasets/moon\\data']
