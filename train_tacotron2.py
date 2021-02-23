@@ -18,6 +18,9 @@ from utils import str2bool, parallel_run
 from utils.audio import save_wav, inv_spectrogram
 from text import sequence_to_text
 from datasets.datafeeder_tacotron2 import DataFeederTacotron2
+
+from tensorflow.python.client import device_lib
+
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
@@ -90,9 +93,8 @@ def save_and_plot(sequences, spectrograms,alignments, log_dir, step, loss, prefi
 
 
 def train(log_dir, config):
-    # tf.debugging.set_log_device_placement(True)
     gpus = tf.config.experimental.list_physical_devices('GPU')
-    print(f'@@@@@@@ GPUS @@@@@@: {len(gpus)}')
+    print(f'@@@@@@@ GPUS @@@@@@: {device_lib.list_local_devices()}')
 
     config.data_paths = config.data_paths  # ['datasets/moon']
 
