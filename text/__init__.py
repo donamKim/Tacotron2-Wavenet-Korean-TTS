@@ -2,13 +2,14 @@
 import re
 import string
 import numpy as np
+import nltk
 
 from text import cleaners
 from hparams import hparams
 from text.symbols import symbols, en_symbols, PAD, EOS
 from text.korean import jamo_to_korean
 
-
+nltk.download()
 
 # Mappings from symbol to numeric ID and vice versa:
 _symbol_to_id = {s: i for i, s in enumerate(symbols)}   # 80개
