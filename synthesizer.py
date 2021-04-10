@@ -13,6 +13,8 @@ python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 
 python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 0 --text "오스트랄로피테쿠스 아파렌시스는 멸종된 사람족 종으로, 현재에는 뼈 화석이 발견되어 있다"
 python synthesizer.py --load_path logdir-tacotron2/moon+son_2019-02-27_00-21-42 --num_speakers 2 --speaker_id 1 --text "오스트랄로피테쿠스 아파렌시스는 멸종된 사람족 종으로, 현재에는 뼈 화석이 발견되어 있다"
 """
+import base64
+import datetime
 import io
 import os
 import re
@@ -223,7 +225,7 @@ def plot_graph_and_save_audio(args,
         alignment_path = "{}/{}.npy".format(base_path, idx)
         np.save(alignment_path, alignment, allow_pickle=False)
 
-    
+
     if path or base_path:
         if path:
             current_path = add_postfix(path, idx)
@@ -231,11 +233,11 @@ def plot_graph_and_save_audio(args,
             current_path = plot_path.replace(".png", ".wav")
 
         save_wav(audio_out, current_path,hparams.sample_rate)
-         
-        #hccho    
+
+        #hccho
         mel_path = current_path.replace(".wav",".npy")
         np.save(mel_path,mel)
-               
+
         return True
     else:
         io_out = io.BytesIO()
@@ -327,22 +329,25 @@ def short_concat(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--load_path', required=True)
-    parser.add_argument('--sample_path', default="logdir-tacotron2/generate")
+    # parser.add_argument('--sample_path', default="logdir-tacotron2/generate")
+    parser.add_argument('--sample_path', default=None)
     parser.add_argument('--text', required=True)
-    parser.add_argument('--num_speakers', default=1, type=int)
-    parser.add_argument('--speaker_id', default=0, type=int)
+    parser.add_argument('--num_speakers', default=4, type=int)
+    parser.add_argument('--speaker_id', default=1, type=int)
     parser.add_argument('--checkpoint_step', default=None, type=int)
     parser.add_argument('--is_korean', default=True, type=str2bool)
     parser.add_argument('--base_alignment_path', default=None)
     config = parser.parse_args()
 
-    makedirs(config.sample_path)
+    if config.sample_path:
+        makedirs(config.sample_path)
 
     synthesizer = Synthesizer()
     synthesizer.load(config.load_path, config.num_speakers, config.checkpoint_step,inference_prenet_dropout=False)
-
     audio = synthesizer.synthesize(texts=[config.text],base_path=config.sample_path,speaker_ids=[config.speaker_id],
                                    attention_trim=True,base_alignment_path=config.base_alignment_path,isKorean=config.is_korean)[0]
+
+    print('@@@@RESULT@@@@: {}'.format(base64.b64encode(audio)))
 
 
 
