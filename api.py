@@ -20,12 +20,18 @@ def synthesize():
     if request.method == 'POST':
         text = str(request.json['text'])
         text = text + text[-1:]
-        print('@@@@@@@@@@@@@ ' + text)
+        speakerType = str(request.json['type'])
+        speakerID = '0'
+        if speakerType == 'donam':
+            speakerID = '1'
+        if speakerType == 'junhyung':
+            speakerID = '3'
+
         res = subprocess.check_output([
             'python3', 'synthesizer.py',
             '--load_path', 'logdir-tacotron2/son_2021-02-23_02-08-50',
             '--num_speakers', '4',
-            '--speaker_id', '1',
+            '--speaker_id', speakerID,
             '--text', text
         ])
         a = res.decode('utf-8').split('@@@@RESULT@@@@: ')
