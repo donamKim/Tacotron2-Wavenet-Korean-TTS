@@ -24,6 +24,8 @@ def synthesize():
         speakerID = '0'
         if speakerType == 'donam':
             speakerID = '1'
+        if speakerType == 'miji':
+            speakerID = '2'
         if speakerType == 'junhyung':
             speakerID = '3'
 
