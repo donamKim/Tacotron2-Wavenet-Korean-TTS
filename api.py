@@ -1,18 +1,15 @@
-# -*- coding: utf-8 -*-
-from flask import Flask, render_template, request
-# from werkzeug import secure_filename
+import base64
+
+from flask import Flask, request
 from flask_cors import CORS
-from datetime import datetime
-import subprocess
-import json
-import operator
-import threading
+from synthesizer import Synthesizer
 
 app = Flask(__name__)
 cors = CORS(app, resources={
     r"/api/v1/synthesize/*": {"origin": "*"},
 })
-
+finalSynthesizer = Synthesizer()
+oldSynthesizer = Synthesizer()
 
 # 파일 업로드 처리
 @app.route('/api/v1/synthesize', methods=['POST', 'OPTIONS'])
@@ -21,6 +18,7 @@ def synthesize():
         text = str(request.json['text'])
         text = text + text[-1:]
         speakerType = str(request.json['type'])
+        source = str(request.json['source'])
         speakerID = '0'
         if speakerType == 'donam':
             speakerID = '1'
@@ -29,22 +27,33 @@ def synthesize():
         if speakerType == 'junhyung':
             speakerID = '3'
 
-        res = subprocess.check_output([
-            'python3', 'synthesizer.py',
-            '--load_path', 'logdir-tacotron2/son_2021-02-23_02-08-50',
-            '--num_speakers', '4',
-            '--speaker_id', speakerID,
-            '--text', text
-        ])
-        a = res.decode('utf-8').split('@@@@RESULT@@@@: ')
-        b = a[1].split('\'')
+        if source == 'final':
+            audio = finalSynthesizer.synthesize(
+                texts=[text],
+                base_path=None,
+                speaker_ids=[speakerID],
+                attention_trim=False,
+                base_alignment_path=None,
+                isKorean=True
+            )[0]
+        else:
+            audio = oldSynthesizer.synthesize(
+                texts=[text],
+                base_path=None,
+                speaker_ids=[speakerID],
+                attention_trim=False,
+                base_alignment_path=None,
+                isKorean=True
+            )[0]
 
-        return {'data': b[1]}
+        return {'data': base64.b64encode(audio).decode('ascii')}
 
     if request.method == 'OPTIONS':
         return 'success'
 
 
 if __name__ == '__main__':
-    # 서버 실행
+    numSpeakers = 4
+    finalSynthesizer.load('logdir-tacotron2/final', numSpeakers, None, inference_prenet_dropout=False)
+    oldSynthesizer.load('logdir-tacotron2/oldest', numSpeakers, None, inference_prenet_dropout=False)
     app.run(host='0.0.0.0', port=21377, debug=True)
